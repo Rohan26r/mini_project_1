@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChurnGuard — Employee Churn Prediction</title>
+    <meta name="description" content="HR Analytics dashboard for predicting employee attrition risk using machine learning." />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+    <!-- ═══════════ HEADER ═══════════ -->
+    <header class="header" id="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <h1>ChurnGuard</h1>
+            </div>
+            <span class="subtitle">Employee Retention Intelligence</span>
+        </div>
+        <div class="header-right" id="headerStats" style="display:none;">
+            <div class="stat-pill">
+                <span class="dot green"></span>
+                <span id="statTotal">--</span> Total
+            </div>
+            <div class="stat-pill danger">
+                <span class="dot red"></span>
+                <span id="statHigh">--</span> High Risk
+            </div>
+            <div class="stat-pill warn">
+                <span class="dot yellow"></span>
+                <span id="statMed">--</span> Medium
+            </div>
+            <div class="stat-pill">
+                <span class="dot green"></span>
+                <span id="statLow">--</span> Low
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════ UPLOAD SECTION ═══════════ -->
+    <section class="upload-section" id="uploadSection">
+        <div class="upload-container">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">📂</div>
+                <h2>Upload Employee Dataset</h2>
+                <p>Drop your CSV file here or click to browse</p>
+                <p class="upload-hint">Expected: Same 35-column structure as HR-Employee-Attrition dataset</p>
+                <input type="file" id="fileInput" accept=".csv" hidden />
+                <button class="upload-btn" id="uploadBtn">Choose CSV File</button>
+            </div>
+            <div class="upload-loading" id="uploadLoading" style="display:none;">
+                <div class="spinner"></div>
+                <p>Analyzing employees & predicting churn risk...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ DASHBOARD (hidden until data loads) ═══════════ -->
+    <main class="main" id="dashboard" style="display:none;">
+
+        <!-- Summary Cards -->
+        <section class="cards-row" id="summaryCards">
+            <div class="card summary-card card-total">
+                <div class="card-icon icon-blue">👥</div>
+                <div class="card-info">
+                    <span class="card-label">Total Employees</span>
+                    <span class="card-value" id="cardTotal">--</span>
+                </div>
+            </div>
+            <div class="card summary-card card-high">
+                <div class="card-icon icon-red">🔴</div>
+                <div class="card-info">
+                    <span class="card-label">High Risk</span>
+                    <span class="card-value" id="cardHigh">--</span>
+                    <span class="card-sub" id="cardHighPct">--</span>
+                </div>
+            </div>
+            <div class="card summary-card card-med">
+                <div class="card-icon icon-yellow">🟡</div>
+                <div class="card-info">
+                    <span class="card-label">Medium Risk</span>
+                    <span class="card-value" id="cardMed">--</span>
+                    <span class="card-sub" id="cardMedPct">--</span>
+                </div>
+            </div>
+            <div class="card summary-card card-low">
+                <div class="card-icon icon-green">🟢</div>
+                <div class="card-info">
+                    <span class="card-label">Low Risk</span>
+                    <span class="card-value" id="cardLow">--</span>
+                    <span class="card-sub" id="cardLowPct">--</span>
+                </div>
+            </div>
+            <div class="card summary-card card-avg">
+                <div class="card-icon icon-purple">📊</div>
+                <div class="card-info">
+                    <span class="card-label">Avg Churn Probability</span>
+                    <span class="card-value" id="cardAvg">--</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row 1: Risk Distribution + Department -->
+        <section class="charts-grid">
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h2>Risk Level Distribution</h2>
+                    <p class="chart-desc">Employees categorized by churn risk</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="riskDonut"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h2>Risk by Department</h2>
+                    <p class="chart-desc">High / Medium / Low risk counts per department</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="deptRiskChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row 2: OverTime + Satisfaction -->
+        <section class="charts-grid">
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h2>OverTime Impact on Churn</h2>
+                    <p class="chart-desc">Average churn probability: Overtime vs No Overtime</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="overtimeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h2>Job Satisfaction vs Churn Risk</h2>
+                    <p class="chart-desc">Average churn probability by satisfaction level (1=Low, 4=High)</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="satisfactionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row 3: Work-Life + Probability Distribution -->
+        <section class="charts-grid">
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h2>Work-Life Balance vs Churn Risk</h2>
+                    <p class="chart-desc">Average churn probability by work-life balance score (1=Bad, 4=Best)</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="wlbChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h2>Churn Probability Distribution</h2>
+                    <p class="chart-desc">How churn probabilities are spread across all employees</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="probHistogram"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Employee Table -->
+        <section class="table-section">
+            <div class="card table-card">
+                <div class="table-header">
+                    <h2>Employee Risk Directory</h2>
+                    <div class="table-controls">
+                        <select id="filterDept" class="filter-select">
+                            <option value="all">All Departments</option>
+                        </select>
+                        <select id="filterRisk" class="filter-select">
+                            <option value="all">All Risk Levels</option>
+                            <option value="HIGH">🔴 High Risk</option>
+                            <option value="MEDIUM">🟡 Medium Risk</option>
+                            <option value="LOW">🟢 Low Risk</option>
+                        </select>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search by ID or role..." />
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="employeeTable">
+                        <thead>
+                            <tr>
+                                <th>Emp ID</th>
+                                <th>Age</th>
+                                <th>Department</th>
+                                <th>Job Role</th>
+                                <th>Income</th>
+                                <th>OverTime</th>
+                                <th>Satisfaction</th>
+                                <th>Churn Prob</th>
+                                <th>Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span id="tableCount">Showing 0 employees</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Upload Button -->
+        <section class="bottom-actions">
+            <button class="upload-new-btn" id="newUploadBtn">📂 Upload New Dataset</button>
+        </section>
+    </main>
+
+    <!-- ═══════════ EMPLOYEE PROFILE MODAL ═══════════ -->
+    <div class="modal-overlay" id="profileModal" style="display:none;">
+        <div class="modal-content profile-modal-content">
+            <div class="modal-header">
+                <h2 id="pModalTitle">👤 Employee Profile</h2>
+                <button class="modal-close" id="profileModalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-grid">
+                    <div class="profile-left">
+                        <div class="profile-avatar-big" id="pAvatar">👨</div>
+                        <h3 id="pName">Employee #--</h3>
+                        <span class="p-role" id="pRole">--</span>
+                        <span class="p-dept" id="pDept">--</span>
+                        <div class="p-risk-badge" id="pRiskBadge">--</div>
+                        <div class="p-churn" id="pChurn">Churn: --%</div>
+                    </div>
+                    <div class="profile-right">
+                        <div class="p-detail"><span>Age</span><span id="pAge">--</span></div>
+                        <div class="p-detail"><span>Gender</span><span id="pGender">--</span></div>
+                        <div class="p-detail"><span>Marital Status</span><span id="pMarital">--</span></div>
+                        <div class="p-detail"><span>Monthly Income</span><span id="pIncome">--</span></div>
+                        <div class="p-detail"><span>OverTime</span><span id="pOT">--</span></div>
+                        <div class="p-detail"><span>Job Satisfaction</span><span id="pJobSat">--</span></div>
+                        <div class="p-detail"><span>Environment</span><span id="pEnvSat">--</span></div>
+                        <div class="p-detail"><span>Work-Life Balance</span><span id="pWLB">--</span></div>
+                        <div class="p-detail"><span>Years at Company</span><span id="pYears">--</span></div>
+                        <div class="p-detail"><span>Last Promotion</span><span id="pPromo">--</span></div>
+                        <div class="p-detail"><span>Distance (km)</span><span id="pDistance">--</span></div>
+                        <div class="p-detail"><span>Education</span><span id="pEdu">--</span></div>
+                        <div class="p-detail"><span>Business Travel</span><span id="pTravel">--</span></div>
+                        <div class="p-detail"><span>Companies Worked</span><span id="pCompanies">--</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-interview" id="startInterviewBtn">🎙️ Start Exit Interview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ CHAT MODAL ═══════════ -->
+    <div class="modal-overlay" id="chatModal" style="display:none;">
+        <div class="modal-content chat-modal-content">
+            <div class="modal-header chat-modal-header">
+                <div class="chat-header-left">
+                    <span class="chat-emp-avatar" id="chatAvatar">👨</span>
+                    <div>
+                        <h2 id="chatTitle">Exit Interview</h2>
+                        <span class="chat-subtitle" id="chatSubtitle">Employee #--</span>
+                    </div>
+                </div>
+                <div class="chat-header-right">
+                    <button class="btn-end-interview" id="endInterviewBtn">🏁 End & Get Feedback</button>
+                    <button class="modal-close" id="chatModalClose">✕</button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="system-msg">
+                    <p>📋 <strong>You are the HR Manager.</strong> Start the exit interview.</p>
+                    <p class="hint">Tip: Greet warmly, ask open questions, offer real solutions.</p>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <textarea id="chatInput" placeholder="Type your message as the HR Manager..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn" type="button" aria-label="Send">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ FEEDBACK MODAL ═══════════ -->
+    <div class="modal-overlay" id="feedbackModal" style="display:none;">
+        <div class="modal-content feedback-modal-content">
+            <div class="modal-header">
+                <h2>📊 Interview Performance Report</h2>
+                <button class="modal-close" id="feedbackModalClose">✕</button>
+            </div>
+            <div class="modal-body" id="feedbackContent">
+                <div class="spinner"></div>
+                <p>Evaluating your performance...</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-interview" id="newInterviewBtn">🔄 Back to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="/static/dashboard.js" defer></script>
+</body>
+
+</html>

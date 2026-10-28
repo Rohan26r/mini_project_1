@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChurnGuard — Welcome</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/auth.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <h1>ChurnGuard</h1>
+      </div>
+      <span class="subtitle">Employee Retention Intelligence</span>
+    </div>
+    <div class="auth-top-actions">
+      <a class="ghost-link" href="/login">Login</a>
+      <a class="primary-link" href="/signup">Create account</a>
+    </div>
+  </header>
+
+  <main class="welcome-min-shell">
+
+    <!-- subtle background -->
+    <div class="min-bg">
+      <span class="min-blob b1"></span>
+      <span class="min-blob b2"></span>
+      <span class="min-grid"></span>
+    </div>
+
+    <section class="min-hero">
+
+      <!-- LEFT -->
+      <div class="min-left">
+        <div class="min-pill">
+          <span class="pulse-dot"></span>
+          <span>ML Churn Prediction Platform</span>
+          <span class="sep">•</span>
+          <span class="rot" id="rotTxt">Risk segmentation</span>
+        </div>
+
+        <h2 class="min-title">
+          Predict churn with clarity.
+          <span class="grad">Take action with confidence.</span>
+        </h2>
+
+        <p class="min-sub">
+          Upload your HR dataset and instantly see churn probability, risk buckets, and
+          department-level insights in a clean dashboard built for decision makers.
+        </p>
+
+        <div class="min-actions">
+          <a class="btn-primary" href="/signup">Get Started</a>
+          <a class="btn-secondary" href="/login">Login</a>
+
+          <div class="min-note">
+            <span class="note-ico">🔒</span>
+            <span>Secure login • Passwords hashed • Local SQLite</span>
+          </div>
+        </div>
+
+        <!-- Minimal feature chips -->
+        <div class="min-features">
+          <div class="chip">
+            <div class="chip-top">
+              <span class="chip-ico">📈</span>
+              <span class="chip-title">Probability</span>
+            </div>
+            <div class="chip-text">Per employee churn probability + histogram.</div>
+          </div>
+
+          <div class="chip">
+            <div class="chip-top">
+              <span class="chip-ico">🧭</span>
+              <span class="chip-title">Risk Buckets</span>
+            </div>
+            <div class="chip-text">Low / Medium / High using percentile thresholds.</div>
+          </div>
+
+          <div class="chip">
+            <div class="chip-top">
+              <span class="chip-ico">🏢</span>
+              <span class="chip-title">Department View</span>
+            </div>
+            <div class="chip-text">Compare risk across departments instantly.</div>
+          </div>
+
+          <div class="chip">
+            <div class="chip-top">
+              <span class="chip-ico">🗂️</span>
+              <span class="chip-title">Risk Directory</span>
+            </div>
+            <div class="chip-text">Search & filter by ID, role, dept, risk.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT (minimal preview) -->
+      <aside class="min-right">
+        <div class="min-card">
+          <div class="min-card-head">
+            <div class="dots">
+              <span class="d red"></span>
+              <span class="d yellow"></span>
+              <span class="d green"></span>
+            </div>
+            <span class="min-card-title">Dashboard Snapshot</span>
+            <span class="min-card-tag">Live UI</span>
+          </div>
+
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <div class="mini-label">High Risk</div>
+              <div class="mini-val red"><span class="count" data-to="18">0</span></div>
+              <div class="mini-sub">employees</div>
+            </div>
+
+            <div class="mini-stat">
+              <div class="mini-label">Avg Churn</div>
+              <div class="mini-val purple"><span class="count" data-to="14">0</span>.<span class="count" data-to="2">0</span>%</div>
+              <div class="mini-sub">probability</div>
+            </div>
+          </div>
+
+          <!-- tiny animated bars (pure CSS) -->
+          <div class="mini-bars">
+            <div class="bar-row">
+              <span class="bar-name">Sales</span>
+              <span class="bar-track"><span class="bar-fill f1"></span></span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-name">R&amp;D</span>
+              <span class="bar-track"><span class="bar-fill f2"></span></span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-name">HR</span>
+              <span class="bar-track"><span class="bar-fill f3"></span></span>
+            </div>
+          </div>
+
+          <div class="min-tip">
+            <span class="tip-ico">✨</span>
+            <div>
+              <div class="tip-title">Tip</div>
+              <div class="tip-text">Use the HR-Employee-Attrition CSV structure for best results.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="min-foot">
+          <span>Ready to explore churn patterns?</span>
+          <a href="/signup">Create your workspace →</a>
+        </div>
+      </aside>
+
+    </section>
+  </main>
+
+  <script>
+    // rotating micro-tagline
+    const phrases = [
+      "Risk segmentation",
+      "Dept hotspots",
+      "Overtime impact",
+      "Satisfaction patterns",
+      "Work-life balance insights"
+    ];
+    const rot = document.getElementById("rotTxt");
+    let i = 0;
+    setInterval(() => {
+      i = (i + 1) % phrases.length;
+      rot.classList.remove("fade");
+      void rot.offsetWidth;
+      rot.textContent = phrases[i];
+      rot.classList.add("fade");
+    }, 2000);
+
+    // count-up
+    const counters = document.querySelectorAll(".count");
+    const animate = (node) => {
+      const to = Number(node.getAttribute("data-to") || "0");
+      const duration = 800;
+      const start = performance.now();
+      const step = (t) => {
+        const p = Math.min((t - start) / duration, 1);
+        node.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !e.target.dataset.done) {
+          e.target.dataset.done = "1";
+          animate(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    counters.forEach(c => io.observe(c));
+  </script>
+</body>
+
+</html>

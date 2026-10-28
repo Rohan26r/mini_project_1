@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChurnGuard — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/auth.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <h1>ChurnGuard</h1>
+      </div>
+      <span class="subtitle">Secure Access</span>
+    </div>
+    <div class="auth-top-actions">
+      <a class="ghost-link" href="/welcome">Back</a>
+      <a class="primary-link" href="/signup">Create account</a>
+    </div>
+  </header>
+
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h2>Welcome back</h2>
+        <p>Login to access the churn prediction dashboard.</p>
+      </div>
+
+      {% if error %}
+      <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <form class="auth-form" method="POST" action="/login">
+        <label>Email</label>
+        <input class="auth-input" type="email" name="email" placeholder="you@company.com" required>
+
+        <label>Password</label>
+        <input class="auth-input" type="password" name="password" placeholder="Enter your password" required>
+
+        <button class="btn-primary full" type="submit">Login</button>
+
+        <div class="auth-foot">
+          <span>Don’t have an account?</span>
+          <a href="/signup">Sign up</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+
+</html>

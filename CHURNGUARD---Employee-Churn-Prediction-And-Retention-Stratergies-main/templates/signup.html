@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChurnGuard — Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/auth.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <h1>ChurnGuard</h1>
+      </div>
+      <span class="subtitle">Create Account</span>
+    </div>
+    <div class="auth-top-actions">
+      <a class="ghost-link" href="/welcome">Back</a>
+      <a class="primary-link" href="/login">Login</a>
+    </div>
+  </header>
+
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h2>Create your account</h2>
+        <p>Securely access your churn prediction workspace.</p>
+      </div>
+
+      {% if error %}
+      <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <form class="auth-form" method="POST" action="/signup">
+        <label>Full Name</label>
+        <input class="auth-input" type="text" name="name" placeholder="Your name" required>
+
+        <label>Email</label>
+        <input class="auth-input" type="email" name="email" placeholder="you@company.com" required>
+
+        <label>Password</label>
+        <input class="auth-input" type="password" name="password" placeholder="Min 6 characters" required>
+
+        <label>Confirm Password</label>
+        <input class="auth-input" type="password" name="confirm_password" placeholder="Re-enter password" required>
+
+        <button class="btn-primary full" type="submit">Create account</button>
+
+        <div class="auth-foot">
+          <span>Already have an account?</span>
+          <a href="/login">Login</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+
+</html>
